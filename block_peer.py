@@ -62,8 +62,10 @@ if __name__ == "__main__":
     ipv6_set_name = "bt-ban-v6"
     exec_system_cmd("ipset create {} hash:ip family inet timeout 300".format(ipv4_set_name))
     exec_system_cmd("ipset create {} hash:ip family inet6 timeout 300".format(ipv6_set_name))
-    assert exec_system_cmd("iptables -I OUTPUT -m set --match-set {} dst -m limit --limit 15/s --limit-burst 5 -j DROP".format(ipv4_set_name))
-    assert exec_system_cmd("ip6tables -I OUTPUT -m set --match-set {} dst -m limit --limit 15/s --limit-burst 5 -j DROP".format(ipv6_set_name))
+    assert exec_system_cmd("iptables -I OUTPUT -m set --match-set {} dst -j DROP".format(ipv4_set_name))
+    assert exec_system_cmd("ip6tables -I OUTPUT -m set --match-set {} dst -j DROP".format(ipv6_set_name))
+    assert exec_system_cmd("iptables -I OUTPUT -m set --match-set {} dst -m hashlimit --hashlimit-mode dstip --hashlimit-upto 128/sec --hashlimit-burst 256 --hashlimit-name conn_rate_limit -j ACCEPT".format(ipv4_set_name))
+    assert exec_system_cmd("ip6tables -I OUTPUT -m set --match-set {} dst -m hashlimit --hashlimit-mode dstip --hashlimit-upto 128/sec --hashlimit-burst 256 --hashlimit-name conn_rate_limit -j ACCEPT".format(ipv6_set_name))
     # black list client
     black_list = ["xfplay", "xunlei", "thunder"]
 
@@ -91,8 +93,10 @@ if __name__ == "__main__":
 
     # clean
     print("removing ipset and iptables rule")
-    assert exec_system_cmd("iptables -D OUTPUT -m set --match-set {} dst -m limit --limit 15/s --limit-burst 5 -j DROP".format(ipv4_set_name))
-    assert exec_system_cmd("ip6tables -D OUTPUT -m set --match-set {} dst -m limit --limit 15/s --limit-burst 5 -j DROP".format(ipv6_set_name))
+    assert exec_system_cmd("iptables -D OUTPUT -m set --match-set {} dst -j DROP".format(ipv4_set_name))
+    assert exec_system_cmd("ip6tables -D OUTPUT -m set --match-set {} dst -j DROP".format(ipv6_set_name))
+    assert exec_system_cmd("iptables -D OUTPUT -m set --match-set {} dst -m hashlimit --hashlimit-mode dstip --hashlimit-upto 128/sec --hashlimit-burst 256 --hashlimit-name conn_rate_limit -j ACCEPT".format(ipv4_set_name))
+    assert exec_system_cmd("ip6tables -D OUTPUT -m set --match-set {} dst -m hashlimit --hashlimit-mode dstip --hashlimit-upto 128/sec --hashlimit-burst 256 --hashlimit-name conn_rate_limit -j ACCEPT".format(ipv6_set_name))
     # fix for wait iptables remove
     time.sleep(3)
     assert exec_system_cmd("ipset destroy {}".format(ipv4_set_name))
