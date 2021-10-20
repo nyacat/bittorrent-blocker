@@ -1,10 +1,12 @@
 # bittorrent-block
 
-限制吸血客户端，例如迅雷，先锋影音等
-支持ipv4 ipv6
+- 限制吸血客户端，例如迅雷，先锋影音等
+- 支持ipv4 ipv6
 
-Restrictions on well-known download only clients
-Support IPv4&IPv6
+<br />
+
+- Restrictions on well-known download only clients
+- Support IPv4&IPv6
 
 ## 截图 Screenshots
 ![Snipaste_2021-10-10_07-26-32](https://user-images.githubusercontent.com/2476717/136676182-88a6584e-8fbd-4a97-b6a1-edebac27dc90.png)
